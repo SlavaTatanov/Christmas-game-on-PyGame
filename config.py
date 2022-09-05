@@ -20,10 +20,9 @@ player_speed = 10
 x_player = 0
 
 # Подарки
-gift_size = int(W*0.09)
+
 gift_speed = 2
-x_gift = random.randint(0, W-gift_size)
-y_gift = -40
+
 
 """
 Разные игровые параметры

@@ -1,15 +1,17 @@
 import pygame
 import config
-import random
+import data.game_objects as g_ob
+import game_info as gi
 
 pygame.init()
+gi.gifts_create()
 
 base_surface = pygame.display.set_mode((config.W, config.H))
 pygame.display.set_caption(config.game_name)
 clock = pygame.time.Clock()  # Частота отрисовки
 
 player = pygame.Surface((config.player_size, config.player_size))
-gift = pygame.Surface((config.gift_size, config.gift_size))
+gift = pygame.Surface((g_ob.Gift.size, g_ob.Gift.size))
 
 while True:
     keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
@@ -52,12 +54,13 @@ while True:
             config.x_player = config.W - config.player_size
 
     # Отслеживание подарка
-    if config.y_gift == config.H - config.gift_size:
-        config.y_gift = -40
-        config.x_gift = random.randint(0, config.W-config.gift_size)
+    for i in range(len(gi.gifts)):
+        if gi.gifts[i].y == config.H - g_ob.Gift.size:
+            gi.gifts[i].crash()
 
     # Падение подарка
-    config.y_gift += config.gift_speed
+    for i in range(len(gi.gifts)):
+        gi.gifts[i].y += config.gift_speed
 
     # Отрисовка объектов
 
@@ -65,9 +68,10 @@ while True:
     # Игрок
     base_surface.blit(player, (config.x_player, config.H - config.player_size))  # Отрисовка поверхности игрока
     player.fill(config.color['White'])
-    # Подарок 1
-    base_surface.blit(gift, (config.x_gift, config.y_gift))
-    gift.fill(config.color['HotPink'])
+    # Подарки
+    for i in range(len(gi.gifts)):
+        base_surface.blit(gift, (gi.gifts[i].x, gi.gifts[i].y))
+        gift.fill(config.color['HotPink'])
 
     # Обновление объектов на экране
     pygame.display.update()
