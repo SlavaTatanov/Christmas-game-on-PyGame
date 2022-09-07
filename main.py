@@ -1,6 +1,5 @@
 import pygame
 import config
-import data.game_objects as g_ob
 import game_info as gi
 
 pygame.init()
@@ -24,6 +23,7 @@ def menu():
 
 
 def game():
+    length_gifts = len(gi.gifts)
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -54,37 +54,47 @@ def game():
 
         # Данный блок отвечает за движения игрока и блокирует его движение за пределы экрана
         if pygame.K_LEFT in config.keys:
-            if gi.player[0].x > 0:
-                gi.player[0].x -= gi.user_status['player_speed']
+            if gi.player[0].rect.x > 0:
+                gi.player[0].rect.x -= gi.user_status['player_speed']
             else:
-                gi.player[0].x = 0
+                gi.player[0].rect.x = 0
         if pygame.K_RIGHT in config.keys:
-            if gi.player[0].x < (config.W - gi.player[0].SIZE):
-                gi.player[0].x += gi.user_status['player_speed']
+            if gi.player[0].rect.x < (config.W - gi.player[0].SIZE):
+                gi.player[0].rect.x += gi.user_status['player_speed']
             else:
-                gi.player[0].x = config.W - gi.player[0].SIZE
+                gi.player[0].rect.x = config.W - gi.player[0].SIZE
 
         # Отслеживание подарка
-        for i in range(len(gi.gifts)):
-            if gi.gifts[i].y == config.H - g_ob.Gift.SIZE:
+        for i in range(length_gifts):
+            # Проверка падения
+            if gi.gifts[i].rect.y > config.H:
                 gi.gifts[i].crash()
+            # Проверка поимки подарка игроком
+            if pygame.Rect.colliderect(gi.gifts[i].rect, gi.player[0].rect):
+                gi.gifts[i].catch()
 
         # Падение подарка
-        for i in range(len(gi.gifts)):
-            gi.gifts[i].y += gi.user_status['gift_speed']
+        for i in range(length_gifts):
+            gi.gifts[i].rect.y += gi.user_status['gift_speed']
+        # Проверки
+        if gi.user_status['health'] <= 0:
+            menu()
+
+        if gi.user_status['score'] > gi.user_status['rank']:
+            gi.user_status['rank'] += 10
+            gi.user_status['gift_speed'] += 1
 
         # Отрисовка объектов
 
         base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
         # Игрок
-        base_surface.blit(gi.player[0].srf, (gi.player[0].x, gi.player[0].y))  # Отрисовка поверхности игрока
+        base_surface.blit(gi.player[0].srf, gi.player[0].rect)  # Отрисовка поверхности игрока
         gi.player[0].srf.fill(config.color['White'])
         # Подарки
-        for i in range(len(gi.gifts)):
-            base_surface.blit(gi.gifts[i].srf, (gi.gifts[i].x, gi.gifts[i].y))
+        for i in range(length_gifts):
+            base_surface.blit(gi.gifts[i].srf, gi.gifts[i].rect)
             gi.gifts[i].srf.fill(config.color['HotPink'])
-        if gi.user_status['health'] == 0:
-            menu()
+
         # Обновление объектов на экране
         pygame.display.update()
         clock.tick(config.FPS)

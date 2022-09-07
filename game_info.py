@@ -1,6 +1,6 @@
 import data.game_objects as g_ob
 
-user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 10}
+user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
 gifts = []
 player = []
 

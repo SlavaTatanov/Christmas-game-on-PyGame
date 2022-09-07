@@ -12,13 +12,12 @@ class Gift:
     SIZE = 0.09 * cf.W
 
     def __init__(self, y):
-        self.x = int(rd.randint(1, cf.W - Gift.SIZE))
-        self.y = y
         self.srf = pg.Surface((Gift.SIZE, Gift.SIZE))
+        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - Gift.SIZE)), y))
 
     def move_up(self):
-        self.x = int(rd.randint(1, cf.W - Gift.SIZE))
-        self.y = int(0 - Gift.SIZE*1.5)
+        self.rect.x = int(rd.randint(1, cf.W - Gift.SIZE))
+        self.rect.y = int(0 - Gift.SIZE*1.5)
 
     def catch(self):
         Gift.move_up(self)
@@ -36,6 +35,5 @@ class Player:
     SIZE = 0.1 * cf.W
 
     def __init__(self):
-        self.x = int(rd.randint(1, cf.W - Player.SIZE))
-        self.y = int(cf.H - Player.SIZE)
         self.srf = pg.Surface((Player.SIZE, Player.SIZE))
+        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - Player.SIZE)), int(cf.H - Player.SIZE)))
