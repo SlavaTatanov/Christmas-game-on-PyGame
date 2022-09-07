@@ -18,6 +18,11 @@ def menu():
             if event.type == pygame.QUIT:
                 exit()
 
+        score = pygame.font.SysFont('arial', 40)
+        tab_srf = score.render(f'Финальный счет: {gi.user_status["score"]}', True, config.color['White'])
+        table = tab_srf.get_rect(center=(config.W//2, config.H//2))
+        base_surface.blit(tab_srf, table)
+
         pygame.display.update()
         clock.tick(config.FPS)
 
@@ -79,13 +84,12 @@ def game():
         # Проверки
         if gi.user_status['health'] <= 0:
             menu()
-
+        # Регулировка скорости
         if gi.user_status['score'] > gi.user_status['rank']:
             gi.user_status['rank'] += 10
             gi.user_status['gift_speed'] += 1
 
         # Отрисовка объектов
-
         base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
         # Игрок
         base_surface.blit(gi.player[0].srf, gi.player[0].rect)  # Отрисовка поверхности игрока
@@ -94,6 +98,12 @@ def game():
         for i in range(length_gifts):
             base_surface.blit(gi.gifts[i].srf, gi.gifts[i].rect)
             gi.gifts[i].srf.fill(config.color['HotPink'])
+        # Отрисовка счета
+        score = pygame.font.SysFont('arial', 20)
+        tab_srf = score.render(f'Счет: {gi.user_status["score"]} Здоровье: {gi.user_status["health"]}',
+                               True, config.color['White'])
+        table = tab_srf.get_rect(topleft=(10, 10))
+        base_surface.blit(tab_srf, table)
 
         # Обновление объектов на экране
         pygame.display.update()
