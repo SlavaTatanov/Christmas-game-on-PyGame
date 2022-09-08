@@ -1,5 +1,4 @@
 import config as cf
-import game_info as gi
 import random as rd
 import pygame as pg
 
@@ -19,13 +18,13 @@ class Gift:
         self.rect.x = int(rd.randint(1, cf.W - Gift.SIZE))
         self.rect.y = int(0 - Gift.SIZE*1.5)
 
-    def catch(self):
+    def catch(self, info):
         Gift.move_up(self)
-        gi.user_status['score'] += 1
+        info['score'] += 1
 
-    def crash(self):
+    def crash(self, info):
         Gift.move_up(self)
-        gi.user_status['health'] -= 1
+        info['health'] -= 1
 
 
 class Player:

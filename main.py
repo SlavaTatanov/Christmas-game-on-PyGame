@@ -3,23 +3,25 @@ import config
 import game_info as gi
 
 pygame.init()
-gi.gifts_create()
 gi.player_create()
 
 base_surface = pygame.display.set_mode((config.W, config.H))
 pygame.display.set_caption(config.game_name)
-clock = pygame.time.Clock()  # Частота отрисовки
+clock = pygame.time.Clock()  # Частота кадров
 
 
-def menu():
+def menu(final_score):
     base_surface.fill(config.color['Black'])
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game()
         score = pygame.font.SysFont('arial', 40)
-        tab_srf = score.render(f'Финальный счет: {gi.user_status["score"]}', True, config.color['White'])
+        tab_srf = score.render(f'Финальный счет: {final_score["score"]}', True, config.color['White'])
         table = tab_srf.get_rect(center=(config.W//2, config.H//2))
         base_surface.blit(tab_srf, table)
 
@@ -28,7 +30,10 @@ def menu():
 
 
 def game():
-    length_gifts = len(gi.gifts)
+    move_direction = {'LEFT': False, 'RIGHT': False}  # Контролирует нажатую клавишу
+    user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
+    gifts = gi.gifts_create()
+    length_gifts = len(gifts)
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -36,58 +41,62 @@ def game():
                 exit()
 
             # Данный блок отлавливает нажатия клавиш игроком (если нажаты обе, движется в сторону последней нажатой)
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    config.keys[pygame.K_LEFT] = True
-                    if len(config.keys) >= 2:
-                        del config.keys[pygame.K_RIGHT]
+                    move_direction['LEFT'] = True
+                    # Если во время нажатия <- уже зажата -> все равно переключает движение на - влево
+                    if move_direction['RIGHT']:
+                        move_direction['RIGHT'] = False
                 if event.key == pygame.K_RIGHT:
-                    config.keys[pygame.K_RIGHT] = True
-                    if len(config.keys) >= 2:
-                        del config.keys[pygame.K_LEFT]
-            elif event.type == pygame.KEYUP:
+                    move_direction['RIGHT'] = True
+                    # Если во время нажатия -> уже зажата <- все равно переключает движение на - вправо
+                    if move_direction['LEFT']:
+                        move_direction['LEFT'] = False
+            if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    if pygame.K_LEFT in config.keys:
-                        del config.keys[pygame.K_LEFT]
+                    if move_direction['LEFT']:
+                        move_direction['LEFT'] = False
+                    # Контроль уже зажатой клавиши
                     if keys[pygame.K_RIGHT]:
-                        config.keys[pygame.K_RIGHT] = True
+                        move_direction['RIGHT'] = True
                 if event.key == pygame.K_RIGHT:
-                    if pygame.K_RIGHT in config.keys:
-                        del config.keys[pygame.K_RIGHT]
+                    if move_direction['RIGHT']:
+                        move_direction['RIGHT'] = False
+                    # Контроль уже зажатой клавиши
                     if keys[pygame.K_LEFT]:
-                        config.keys[pygame.K_LEFT] = True
+                        move_direction['LEFT'] = True
 
         # Данный блок отвечает за движения игрока и блокирует его движение за пределы экрана
-        if pygame.K_LEFT in config.keys:
+        if move_direction['LEFT']:
             if gi.player[0].rect.x > 0:
-                gi.player[0].rect.x -= gi.user_status['player_speed']
+                gi.player[0].rect.x -= user_status['player_speed']
             else:
                 gi.player[0].rect.x = 0
-        if pygame.K_RIGHT in config.keys:
+        if move_direction['RIGHT']:
             if gi.player[0].rect.x < (config.W - gi.player[0].SIZE):
-                gi.player[0].rect.x += gi.user_status['player_speed']
+                gi.player[0].rect.x += user_status['player_speed']
             else:
                 gi.player[0].rect.x = config.W - gi.player[0].SIZE
 
         # Отслеживание подарка
         for i in range(length_gifts):
             # Проверка падения
-            if gi.gifts[i].rect.y > config.H:
-                gi.gifts[i].crash()
+            if gifts[i].rect.y > config.H:
+                gifts[i].crash(user_status)
             # Проверка поимки подарка игроком
-            if pygame.Rect.colliderect(gi.gifts[i].rect, gi.player[0].rect):
-                gi.gifts[i].catch()
+            if pygame.Rect.colliderect(gifts[i].rect, gi.player[0].rect):
+                gifts[i].catch(user_status)
 
         # Падение подарка
         for i in range(length_gifts):
-            gi.gifts[i].rect.y += gi.user_status['gift_speed']
+            gifts[i].rect.y += user_status['gift_speed']
         # Проверки
-        if gi.user_status['health'] <= 0:
-            menu()
+        if user_status['health'] <= 0:
+            menu(user_status)
         # Регулировка скорости
-        if gi.user_status['score'] > gi.user_status['rank']:
-            gi.user_status['rank'] += 10
-            gi.user_status['gift_speed'] += 1
+        if user_status['score'] > user_status['rank']:
+            user_status['rank'] += 10
+            user_status['gift_speed'] += 1
 
         # Отрисовка объектов
         base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
@@ -96,11 +105,11 @@ def game():
         gi.player[0].srf.fill(config.color['White'])
         # Подарки
         for i in range(length_gifts):
-            base_surface.blit(gi.gifts[i].srf, gi.gifts[i].rect)
-            gi.gifts[i].srf.fill(config.color['HotPink'])
+            base_surface.blit(gifts[i].srf, gifts[i].rect)
+            gifts[i].srf.fill(config.color['HotPink'])
         # Отрисовка счета
         score = pygame.font.SysFont('arial', 20)
-        tab_srf = score.render(f'Счет: {gi.user_status["score"]} Здоровье: {gi.user_status["health"]}',
+        tab_srf = score.render(f'Счет: {user_status["score"]} Здоровье: {user_status["health"]}',
                                True, config.color['White'])
         table = tab_srf.get_rect(topleft=(10, 10))
         base_surface.blit(tab_srf, table)
