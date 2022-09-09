@@ -1,20 +1,15 @@
 import data.game_objects as g_ob
+import config as cf
 
 # Данные перенести в main, файл сделать game tools, где просто набор инструментов для наполнения
-player = []  # Игрок
 
 
-def gifts_create():
+def gifts_create(col=3, interval=600):
     res = []
-    gift_1 = g_ob.Gift(-100)
-    res.append(gift_1)
-    gift_2 = g_ob.Gift(-300)
-    res.append(gift_2)
-    gift_3 = g_ob.Gift(-500)
-    res.append(gift_3)
+    start_pos = interval
+    for i in range(col):
+        gift_y = start_pos - interval
+        start_pos = gift_y
+        gift = g_ob.Gift(gift_y, cf.color['HotPink'])
+        res.append(gift)
     return res
-
-
-def player_create():
-    current_player = g_ob.Player()
-    player.append(current_player)

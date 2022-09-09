@@ -1,9 +1,9 @@
 import pygame
 import config
 import game_info as gi
+import data.game_objects as g_ob
 
 pygame.init()
-gi.player_create()
 
 base_surface = pygame.display.set_mode((config.W, config.H))
 pygame.display.set_caption(config.game_name)
@@ -34,6 +34,7 @@ def game():
     user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
     gifts = gi.gifts_create()
     length_gifts = len(gifts)
+    player = g_ob.GameObject(config.H, config.color['White'])
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -68,15 +69,15 @@ def game():
 
         # Данный блок отвечает за движения игрока и блокирует его движение за пределы экрана
         if move_direction['LEFT']:
-            if gi.player[0].rect.x > 0:
-                gi.player[0].rect.x -= user_status['player_speed']
+            if player.rect.x > 0:
+                player.rect.x -= user_status['player_speed']
             else:
-                gi.player[0].rect.x = 0
+                player.rect.x = 0
         if move_direction['RIGHT']:
-            if gi.player[0].rect.x < (config.W - gi.player[0].SIZE):
-                gi.player[0].rect.x += user_status['player_speed']
+            if player.rect.x < (config.W - player.size):
+                player.rect.x += user_status['player_speed']
             else:
-                gi.player[0].rect.x = config.W - gi.player[0].SIZE
+                player.rect.x = config.W - player.size
 
         # Отслеживание подарка
         for i in range(length_gifts):
@@ -84,7 +85,7 @@ def game():
             if gifts[i].rect.y > config.H:
                 gifts[i].crash(user_status)
             # Проверка поимки подарка игроком
-            if pygame.Rect.colliderect(gifts[i].rect, gi.player[0].rect):
+            if pygame.Rect.colliderect(gifts[i].rect, player.rect):
                 gifts[i].catch(user_status)
 
         # Падение подарка
@@ -101,12 +102,10 @@ def game():
         # Отрисовка объектов
         base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
         # Игрок
-        base_surface.blit(gi.player[0].srf, gi.player[0].rect)  # Отрисовка поверхности игрока
-        gi.player[0].srf.fill(config.color['White'])
+        player.render(base_surface)
         # Подарки
         for i in range(length_gifts):
-            base_surface.blit(gifts[i].srf, gifts[i].rect)
-            gifts[i].srf.fill(config.color['HotPink'])
+            gifts[i].render(base_surface)
         # Отрисовка счета
         score = pygame.font.SysFont('arial', 20)
         tab_srf = score.render(f'Счет: {user_status["score"]} Здоровье: {user_status["health"]}',

@@ -3,20 +3,29 @@ import random as rd
 import pygame as pg
 
 
-class Gift:
+class GameObject:
+    """
+    Из него создается игрок, и он родительский для подарка
+    """
+    def __init__(self, y, color, size=0.1):
+        self.size = size * cf.W
+        self.color = color
+        self.srf = pg.Surface((self.size, self.size))
+        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - self.size)), int(y - self.size)))
+
+    def render(self, srf):
+        srf.blit(self.srf, self.rect)
+        self.srf.fill(self.color)
+
+
+class Gift(GameObject):
     """
     Класс 'Подарок', предметы, которые предстоит ловить игроку. Имеет координаты, размер и методы когда игрок поймал
     предмет или предмет упал на землю
     """
-    SIZE = 0.09 * cf.W
-
-    def __init__(self, y):
-        self.srf = pg.Surface((Gift.SIZE, Gift.SIZE))
-        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - Gift.SIZE)), y))
-
     def move_up(self):
-        self.rect.x = int(rd.randint(1, cf.W - Gift.SIZE))
-        self.rect.y = int(0 - Gift.SIZE*1.5)
+        self.rect.x = int(rd.randint(1, cf.W - self.size))
+        self.rect.y = int(cf.H - cf.H*1.5)
 
     def catch(self, info):
         Gift.move_up(self)
@@ -25,14 +34,3 @@ class Gift:
     def crash(self, info):
         Gift.move_up(self)
         info['health'] -= 1
-
-
-class Player:
-    """
-    Класс игрока
-    """
-    SIZE = 0.1 * cf.W
-
-    def __init__(self):
-        self.srf = pg.Surface((Player.SIZE, Player.SIZE))
-        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - Player.SIZE)), int(cf.H - Player.SIZE)))
