@@ -34,3 +34,25 @@ class Gift(GameObject):
     def crash(self, info):
         Gift.move_up(self)
         info['health'] -= 1
+
+
+class TextLabel:
+    """
+    Текстовые лейблы (отображение счета и прочее)
+    """
+    def __init__(self, font, font_size, message, coordinates, color, center=False):
+        self.message = message
+        self.coordinates = coordinates
+        self.color = color
+        self.center = center
+        self.font = pg.font.SysFont(font, font_size)
+        self.label_srf = None
+        self.label_rect = None
+
+    def render(self, base_surf):
+        self.label_srf = self.font.render(self.message, True, self.color)
+        if self.center:
+            self.label_rect = self.label_srf.get_rect(center=self.coordinates)
+        else:
+            self.label_rect = self.label_srf.get_rect(topleft=self.coordinates)
+        base_surf.blit(self.label_srf, self.label_rect)

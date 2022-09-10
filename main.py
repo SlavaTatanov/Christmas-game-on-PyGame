@@ -12,6 +12,8 @@ clock = pygame.time.Clock()  # Частота кадров
 
 def menu(final_score):
     base_surface.fill(config.color['Black'])
+    score_result = g_ob.TextLabel('arial', 40, f'Финальный счет: {final_score["score"]}', (config.W//2, config.H//2),
+                                  config.color['White'], True)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -20,11 +22,9 @@ def menu(final_score):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     game()
-        score = pygame.font.SysFont('arial', 40)
-        tab_srf = score.render(f'Финальный счет: {final_score["score"]}', True, config.color['White'])
-        table = tab_srf.get_rect(center=(config.W//2, config.H//2))
-        base_surface.blit(tab_srf, table)
-
+        # Отрисовка финального счета
+        score_result.render(base_surface)
+        # Общее обновление экрана
         pygame.display.update()
         clock.tick(config.FPS)
 
