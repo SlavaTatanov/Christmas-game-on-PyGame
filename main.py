@@ -12,8 +12,7 @@ clock = pygame.time.Clock()  # Частота кадров
 
 def menu(final_score):
     base_surface.fill(config.color['Black'])
-    score_result = g_ob.TextLabel('arial', 40, f'Финальный счет: {final_score["score"]}', (config.W//2, config.H//2),
-                                  config.color['White'], True)
+    score_result = g_ob.TextLabel('arial', 40, (config.W//2, config.H//2), config.color['White'], True)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -23,7 +22,7 @@ def menu(final_score):
                 if event.key == pygame.K_SPACE:
                     game()
         # Отрисовка финального счета
-        score_result.render(base_surface)
+        score_result.render(f'Финальный счет: {final_score["score"]}', base_surface)
         # Общее обновление экрана
         pygame.display.update()
         clock.tick(config.FPS)
@@ -35,6 +34,7 @@ def game():
     gifts = gi.gifts_create()
     length_gifts = len(gifts)
     player = g_ob.GameObject(config.H, config.color['White'])
+    score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['White'])
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -107,12 +107,7 @@ def game():
         for i in range(length_gifts):
             gifts[i].render(base_surface)
         # Отрисовка счета
-        score = pygame.font.SysFont('arial', 20)
-        tab_srf = score.render(f'Счет: {user_status["score"]} Здоровье: {user_status["health"]}',
-                               True, config.color['White'])
-        table = tab_srf.get_rect(topleft=(10, 10))
-        base_surface.blit(tab_srf, table)
-
+        score_label.render(f'Счет: {user_status["score"]} Здоровье: {user_status["health"]}', base_surface)
         # Обновление объектов на экране
         pygame.display.update()
         clock.tick(config.FPS)

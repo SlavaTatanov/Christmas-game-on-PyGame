@@ -40,8 +40,7 @@ class TextLabel:
     """
     Текстовые лейблы (отображение счета и прочее)
     """
-    def __init__(self, font, font_size, message, coordinates, color, center=False):
-        self.message = message
+    def __init__(self, font, font_size, coordinates, color, center=False):
         self.coordinates = coordinates
         self.color = color
         self.center = center
@@ -49,8 +48,8 @@ class TextLabel:
         self.label_srf = None
         self.label_rect = None
 
-    def render(self, base_surf):
-        self.label_srf = self.font.render(self.message, True, self.color)
+    def render(self, message, base_surf):
+        self.label_srf = self.font.render(message, True, self.color)
         if self.center:
             self.label_rect = self.label_srf.get_rect(center=self.coordinates)
         else:
