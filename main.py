@@ -10,7 +10,7 @@ pygame.display.set_caption(config.game_name)
 clock = pygame.time.Clock()  # Частота кадров
 
 
-def menu(final_score):
+def final_score_display(final_score):
     base_surface.fill(config.color['Black'])
     score_result = g_ob.TextLabel('arial', 40, (config.W//2, config.H//2), config.color['White'], True)
     while True:
@@ -32,9 +32,9 @@ def game():
     move_direction = {'LEFT': False, 'RIGHT': False}  # Контролирует нажатую клавишу
     user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
     gifts = gi.gifts_create()
-    length_gifts = len(gifts)
     player = g_ob.GameObject(config.H, config.color['White'])
     score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['White'])
+    objects = gifts + [player]  # Общий список объектов для рендера
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -80,20 +80,20 @@ def game():
                 player.rect.x = config.W - player.size
 
         # Отслеживание подарка
-        for i in range(length_gifts):
+        for i in gifts:
             # Проверка падения
-            if gifts[i].rect.y > config.H:
-                gifts[i].crash(user_status)
+            if i.rect.y > config.H:
+                i.crash(user_status)
             # Проверка поимки подарка игроком
-            if pygame.Rect.colliderect(gifts[i].rect, player.rect):
-                gifts[i].catch(user_status)
+            if pygame.Rect.colliderect(i.rect, player.rect):
+                i.catch(user_status)
 
         # Падение подарка
-        for i in range(length_gifts):
-            gifts[i].rect.y += user_status['gift_speed']
+        for i in gifts:
+            i.rect.y += user_status['gift_speed']
         # Проверки
         if user_status['health'] <= 0:
-            menu(user_status)
+            final_score_display(user_status)
         # Регулировка скорости
         if user_status['score'] > user_status['rank']:
             user_status['rank'] += 10
@@ -101,11 +101,9 @@ def game():
 
         # Отрисовка объектов
         base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
-        # Игрок
-        player.render(base_surface)
-        # Подарки
-        for i in range(length_gifts):
-            gifts[i].render(base_surface)
+        # Отрисовка игрока и подарков (оба класса имеют один метод)
+        for i in objects:
+            i.render(base_surface)
         # Отрисовка счета
         score_label.render(f'Счет: {user_status["score"]} Здоровье: {user_status["health"]}', base_surface)
         # Обновление объектов на экране
