@@ -32,7 +32,7 @@ def game():
     move_direction = {'LEFT': False, 'RIGHT': False}  # Контролирует нажатую клавишу
     user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
     gifts = gi.gifts_create()
-    player = g_ob.GameObject(config.H, config.color['White'])
+    player = g_ob.GameObject(config.H)
     score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['White'])
     objects = gifts + [player]  # Общий список объектов для рендера
     while True:

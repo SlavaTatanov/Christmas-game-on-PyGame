@@ -7,15 +7,14 @@ class GameObject:
     """
     Из него создается игрок, и он родительский для подарка
     """
-    def __init__(self, y, color, size=0.1):
+    def __init__(self, y, size=0.1):
         self.size = size * cf.W
-        self.color = color
-        self.srf = pg.Surface((self.size, self.size))
-        self.rect = self.srf.get_rect(topleft=(int(rd.randint(1, cf.W - self.size)), int(y - self.size)))
+        self.img = pg.image.load('data/img/gift.png').convert_alpha()
+        self.img = pg.transform.scale(self.img, (self.size, self.size))
+        self.rect = self.img.get_rect(topleft=(int(rd.randint(1, cf.W - self.size)), int(y - self.size)))
 
     def render(self, srf):
-        srf.blit(self.srf, self.rect)
-        self.srf.fill(self.color)
+        srf.blit(self.img, self.rect)
 
 
 class Gift(GameObject):
