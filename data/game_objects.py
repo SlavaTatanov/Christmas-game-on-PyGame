@@ -7,9 +7,9 @@ class GameObject:
     """
     Из него создается игрок, и он родительский для подарка
     """
-    def __init__(self, y, size=0.1):
+    def __init__(self, y, size=0.1, img='data/img/gift.png'):
         self.size = size * cf.W
-        self.img = pg.image.load('data/img/gift.png').convert_alpha()
+        self.img = pg.image.load(img).convert_alpha()
         self.img = pg.transform.scale(self.img, (self.size, self.size))
         self.rect = self.img.get_rect(topleft=(int(rd.randint(1, cf.W - self.size)), int(y - self.size)))
 
