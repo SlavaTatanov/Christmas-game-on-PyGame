@@ -30,9 +30,9 @@ def final_score_display(final_score):
 
 def game():
     move_direction = {'LEFT': False, 'RIGHT': False}  # Контролирует нажатую клавишу
-    user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10}
+    user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10, 'last_gift': None}
     gifts = gi.gifts_create()
-    player = g_ob.GameObject(config.H)
+    player = g_ob.GameObject(config.H, size=0.135, img='data/img/player.png')
     score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['White'])
     objects = gifts + [player]  # Общий список объектов для рендера
     while True:
@@ -83,10 +83,10 @@ def game():
         for i in gifts:
             # Проверка падения
             if i.rect.y > config.H:
-                i.crash(user_status)
+                i.crash(user_status, i)
             # Проверка поимки подарка игроком
             if pygame.Rect.colliderect(i.rect, player.rect):
-                i.catch(user_status)
+                i.catch(user_status, i)
 
         # Падение подарка
         for i in gifts:

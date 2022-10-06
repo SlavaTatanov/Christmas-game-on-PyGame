@@ -22,16 +22,20 @@ class Gift(GameObject):
     Класс 'Подарок', предметы, которые предстоит ловить игроку. Имеет координаты, размер и методы когда игрок поймал
     предмет или предмет упал на землю
     """
-    def move_up(self):
+    def move_up(self, obj, info):
         self.rect.x = int(rd.randint(1, cf.W - self.size))
-        self.rect.y = int(cf.H - cf.H*1.5)
+        if not info['last_gift']:
+            self.rect.y = int(-500)
+        else:
+            self.rect.y = info['last_gift'].rect.y - 500
+        info['last_gift'] = obj
 
-    def catch(self, info):
-        Gift.move_up(self)
+    def catch(self, info, obj):
+        Gift.move_up(self, obj, info)
         info['score'] += 1
 
-    def crash(self, info):
-        Gift.move_up(self)
+    def crash(self, info, obj):
+        Gift.move_up(self, obj, info)
         info['health'] -= 1
 
 
