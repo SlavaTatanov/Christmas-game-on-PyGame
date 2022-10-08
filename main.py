@@ -1,6 +1,6 @@
 import pygame
 import config
-import game_info as gi
+import game_tools as gt
 import data.game_objects as g_ob
 
 pygame.init()
@@ -8,6 +8,12 @@ pygame.init()
 base_surface = pygame.display.set_mode((config.W, config.H))
 pygame.display.set_caption(config.game_name)
 clock = pygame.time.Clock()  # Частота кадров
+
+try:
+    gt.back_music(config.data_url)
+except pygame.error:
+    gt.data_upd(config.data_url)
+    gt.back_music(config.data_url)
 
 
 def final_score_display(final_score):
@@ -31,10 +37,11 @@ def final_score_display(final_score):
 def game():
     move_direction = {'LEFT': False, 'RIGHT': False}  # Контролирует нажатую клавишу
     user_status = {'score': 0, 'health': 3, 'gift_speed': 2, 'player_speed': 12, 'rank': 10, 'last_gift': None}
-    gifts = gi.gifts_create()
+    gifts = gt.gifts_create()
     player = g_ob.GameObject(config.H, size=0.135, img='data/img/player.png')
-    score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['White'])
+    score_label = g_ob.TextLabel('arial', 17, (10, 10), config.color['Black'])
     objects = gifts + [player]  # Общий список объектов для рендера
+    back = pygame.image.load('data/img/back.jpg')  # Фон
     while True:
         keys = pygame.key.get_pressed()  # Отслеживает нажатые клавиши
         for event in pygame.event.get():
@@ -99,8 +106,8 @@ def game():
             user_status['rank'] += 10
             user_status['gift_speed'] += 1
 
-        # Отрисовка объектов
-        base_surface.fill(config.color['Black'])  # Постоянно закрашивает фон
+        # Отрисовка объектов, фон
+        base_surface.blit(back, (0, 0))
         # Отрисовка игрока и подарков (оба класса имеют один метод)
         for i in objects:
             i.render(base_surface)
